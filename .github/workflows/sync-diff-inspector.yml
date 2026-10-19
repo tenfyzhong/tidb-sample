@@ -1,0 +1,48 @@
+name: Sync Diff Inspector Demo
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    name: Compare (${{ matrix.scenario }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario:
+          - consistent
+          - inconsistent
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run comparison
+        shell: bash
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+        run: bash sync-diff-inspector/demo.sh "$SCENARIO"
+
+      - name: Print summary and sync-diff log
+        if: ${{ always() }}
+        shell: bash
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+        run: |
+          shopt -s nullglob
+          for filename in summary.txt sync_diff.log; do
+            files=(sync-diff-inspector/results/run-*/"$SCENARIO"/output/"$filename")
+            if (( ${#files[@]} == 0 )); then
+              echo "::warning::No $filename generated for $SCENARIO; check the comparison step."
+              continue
+            fi
+            for file in "${files[@]}"; do
+              echo "::group::$file"
+              cat -- "$file"
+              echo "::endgroup::"
+            done
+          done
