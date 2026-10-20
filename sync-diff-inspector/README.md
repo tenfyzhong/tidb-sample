@@ -100,7 +100,7 @@ Workflow file: [`sync-diff-inspector.yml`](../.github/workflows/sync-diff-inspec
 
 After merging the workflow into the default branch, trigger it manually from **Actions → Sync Diff Inspector Demo → Run workflow** in the GitHub repository. Each run executes `consistent` and `inconsistent` on two separate Ubuntu runners. A failure in one scenario does not cancel the other.
 
-The final **Print summary and sync-diff log** step in each job uses `cat` to print the complete `summary.txt` and `sync_diff.log` generated for that scenario, grouped by file. This step runs even if the comparison step fails. If the failure occurs before reports are generated, it displays a warning about missing files while preserving the original comparison failure status. Each job has a 20-minute timeout.
+The **Print summary and sync-diff log** step in each job uses `cat` to print the complete `summary.txt` and `sync_diff.log` generated for that scenario, grouped by file. For the `inconsistent` scenario, **Print fix-on-tidb files** also prints the complete contents of all files under `output/fix-on-tidb/`, grouped by file. These steps run even if the comparison step fails. If reports or fix files are missing, they display a warning while preserving the original comparison failure status. Each job has a 20-minute timeout.
 
 You can also trigger the workflow manually with the GitHub CLI:
 
