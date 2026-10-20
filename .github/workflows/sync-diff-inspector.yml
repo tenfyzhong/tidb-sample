@@ -47,14 +47,14 @@ jobs:
             done
           done
 
-      - name: Print fix-on-target files
+      - name: Print fix-on-tidb files
         if: ${{ always() && matrix.scenario == 'inconsistent' }}
         shell: bash
         env:
           SCENARIO: ${{ matrix.scenario }}
         run: |
           shopt -s nullglob globstar dotglob
-          files=(sync-diff-inspector/results/run-*/"$SCENARIO"/output/fix-on-target/**/*)
+          files=(sync-diff-inspector/results/run-*/"$SCENARIO"/output/fix-on-tidb/**/*)
           found=false
           for file in "${files[@]}"; do
             [[ -f "$file" ]] || continue
@@ -64,5 +64,5 @@ jobs:
             echo "::endgroup::"
           done
           if [[ "$found" == false ]]; then
-            echo "::warning::No fix-on-target files generated for $SCENARIO; check the comparison step."
+            echo "::warning::No fix-on-tidb files generated for $SCENARIO; check the comparison step."
           fi
